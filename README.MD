@@ -6,13 +6,14 @@ Para facilitar, criei um disparador automático.
 2. Localize o arquivo **`rodar_agora.bat`**.
 3. Clique com o botão direito e selecione **"Executar como Administrador"**.
 
-Este script foi desenvolvido para automatizar a configuração técnica de emissão de Notas Fiscais Eletrônicas, garantindo que o Windows esteja nos padrões exigidos pelos órgãos certificadores e SEFAZ, nele eu configuro as opções de internet avançadas, e removo as autoridades certificadores brasileiras
+Este script foi desenvolvido para automatizar a configuração técnica de emissão de Notas Fiscais Eletrônicas, garantindo que o Windows esteja nos padrões exigidos pelos órgãos certificadores e SEFAZ, nele eu configuro as opções de internet avançadas, e removo as autoridades certificadores brasileiras de todas as versões usadas.
+
 
 ✅ Testado em: Windows 10 e Windows 11. 
 ⚠️ Compatibilidade Provável: Windows 8 e 8.1 (pendente de testes formais). 
 ❌ Não compatível: Windows 7 e versões anteriores.
 
-🟦 1. RODAR_AGORA.bat (O Disparador)
+🟦 1. rodar_agoranew.bat (O Disparador)
 Este arquivo funciona como a chave de ignição do sistema. Ele foi configurado com quatro pilares de segurança e performance:
 
 @echo off: Garante que o console não fique "sujo" com linhas de comando confusas, focando apenas na execução.
@@ -41,7 +42,7 @@ Limpeza Automática de Raízes: Localiza e remove silenciosamente os certificado
 WinTrust State: Ajusta o estado de confiança do Windows para ignorar avisos burocráticos que travam a comunicação com os servidores da SEFAZ.
 
 ⚠️ AVISO IMPORTANTE
-Para que o script consiga remover certificados da Raiz do Sistema e alterar chaves de registro protegidas, o arquivo rodar_agora.bat deve ser executado como Administrador.
+Para que o script consiga remover certificados da Raiz do Sistema e alterar chaves de registro protegidas, o arquivo rodar_agoranew.bat deve ser executado como Administrador.
 
 
 
@@ -51,6 +52,6 @@ Este script foi desenvolvido para fins de automação e facilitação técnica. 
 * O script realiza alterações em chaves do **Registro do Windows (Regedit)**.
 * O script remove certificados específicos da loja de raízes do sistema.
 * **Uso por sua conta e risco:** Não me responsabilizo por eventuais instabilidades ou comportamentos inesperados no sistema operacional. 
-* **Recomendação:** É altamente aconselhável criar um **Ponto de Restauração** do Windows antes de aplicar as configurações.
+* **Recomendação:** É altamente aconselhável criar um **Ponto de Restauração** do Windows antes de aplicar as configurações ou ter tirar um print das opções avançadas de internet e acessar o s.
 
 > **Aviso:** Este script foi desenvolvido para o contexto tributário e técnico do Brasil (ICP-Brasil / SEFAZ).
