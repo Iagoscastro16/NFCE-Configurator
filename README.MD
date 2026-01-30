@@ -1,4 +1,11 @@
 📄 INSTRUÇÕES DE USO - CONFIGURADOR NFe (Versão GUI)
+
+## Como Executar
+Para facilitar, criei um disparador automático. 
+1. Baixe o conteúdo do repositório.
+2. Localize o arquivo **`rodar_agora.bat`**.
+3. Clique com o botão direito e selecione **"Executar como Administrador"**.
+
 Este script foi desenvolvido para automatizar a configuração técnica de emissão de Notas Fiscais Eletrônicas, garantindo que o Windows esteja nos padrões exigidos pelos órgãos certificadores e SEFAZ, nele eu configuro as opções de internet avançadas, e removo as autoridades certificadores brasileiras
 
 ✅ Testado em: Windows 10 e Windows 11. 
