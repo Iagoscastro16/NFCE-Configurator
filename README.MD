@@ -1,4 +1,4 @@
-📄 INSTRUÇÕES DE USO - CONFIGURADOR NFe (Versão GUI)
+📄 INSTRUÇÕES DE USO - CONFIGURADOR NFCe (Versão GUI)
 
 ## Como Executar
 Para facilitar, criei um disparador automático. 
@@ -30,7 +30,7 @@ O que ele faz tecnicamente:
 
 Interface Retrô: Cria uma janela nativa que evita que o usuário precise interagir com linhas de comando, reduzindo erros de operação.
 
-Ajuste de Registros (Internet Settings): * Configura o SecureProtocols para 2080 (SSL 3.0 + TLS 1.2), o padrão exigido pela NFe.
+Ajuste de Registros (Internet Settings): * Configura o SecureProtocols para 2080 (SSL 3.0 + TLS 1.2), o padrão exigido pela NFCe.
 
 Desativa o cache de páginas SSL e o SmartScreen para evitar bloqueios de download de XML.
 
