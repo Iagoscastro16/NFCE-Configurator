@@ -1,5 +1,5 @@
 ﻿# =========================================================
-# ConfigNFENew_Com_Interface.ps1
+# ConfigNFCeNew Com Interface
 # =========================================================
 
 # AVISO: Este script altera registros do Windows e de autoridades certificadoras. Use por sua conta e risco.
@@ -44,12 +44,12 @@ function Executar-Configuracao {
 
     $OutputLabel.Text = "Status: Concluído com Sucesso!"
     $OutputLabel.ForeColor = "DarkGreen"
-    [System.Windows.Forms.MessageBox]::Show("As configurações de Internet e Certificados NFe foram aplicadas!", "Sucesso")
+    [System.Windows.Forms.MessageBox]::Show("As configurações de Internet e Certificados NFCe foram aplicadas!", "Sucesso")
 }
 
 # --- Criação da Interface Gráfica ---
 $form = New-Object System.Windows.Forms.Form
-$form.Text = "Configurador NFe"
+$form.Text = "Configurador NFCe"
 $form.Size = New-Object System.Drawing.Size(350,220)
 $form.StartPosition = "CenterScreen"
 $form.FormBorderStyle = "FixedDialog"
@@ -57,7 +57,7 @@ $form.MaximizeBox = $false
 
 # Título
 $label = New-Object System.Windows.Forms.Label
-$label.Text = "Configuração Automática NFe"
+$label.Text = "Configuração Automática NFCe"
 $label.Location = New-Object System.Drawing.Point(20,20)
 $label.Size = New-Object System.Drawing.Size(300,20)
 $label.Font = New-Object System.Drawing.Font("Arial", 11, [System.Drawing.FontStyle]::Bold)
