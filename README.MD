@@ -3,7 +3,7 @@ INSTRUÇÕES DE USO - CONFIGURADOR NFCe (Versão GUI)
 ## Como Executar
 Para facilitar, criei um disparador automático. 
 1. Baixe o conteúdo do repositório.
-2. Localize o arquivo **`rodar_agora.bat`**.
+2. Localize o arquivo **`setupNFCe.bat`**.
 3. Clique com o botão direito e selecione **"Executar como Administrador"**.
 
 Este script foi desenvolvido para automatizar a configuração técnica de emissão de Notas Fiscais Eletrônicas, garantindo que o Windows esteja nos padrões exigidos pelos órgãos certificadores e SEFAZ, nele eu configuro as opções de internet avançadas, e removo as autoridades certificadores brasileiras de todas as versões usadas.
@@ -13,7 +13,7 @@ Este script foi desenvolvido para automatizar a configuração técnica de emiss
  Compatibilidade Provável: Windows 8 e 8.1 (pendente de testes formais). 
  Não compatível: Windows 7 e versões anteriores.
 
-🟦 1. rodar_agoranew.bat (O Disparador)
+🟦 1. setupNFCe.bat (O Disparador)
 Este arquivo funciona como a chave de ignição do sistema. Ele foi configurado com quatro pilares de segurança e performance:
 
 @echo off: Garante que o console não fique "sujo" com linhas de comando confusas, focando apenas na execução.
@@ -24,7 +24,7 @@ Este arquivo funciona como a chave de ignição do sistema. Ele foi configurado 
 
 %~dp0: Este código inteligente diz ao Windows: "Não importa em qual pasta o usuário salvou isso, procure o script de configuração exatamente no mesmo lugar onde este .bat está".
 
-🟦 2. ConfigNFENew.ps1 (O Motor e a Interface)
+🟦 2. ConfigNFCe.ps1 (O Motor e a Interface)
 Diferente das versões anteriores de terminal, este script agora possui uma Interface Gráfica (GUI) baseada em Windows Forms, trazendo uma experiência mais intuitiva e segura.
 
 O que ele faz tecnicamente:
@@ -42,8 +42,9 @@ Limpeza Automática de Raízes: Localiza e remove silenciosamente os certificado
 WinTrust State: Ajusta o estado de confiança do Windows para ignorar avisos burocráticos que travam a comunicação com os servidores da SEFAZ.
 
 ⚠️ AVISO IMPORTANTE
-Para que o script consiga remover certificados da Raiz do Sistema e alterar chaves de registro protegidas, o arquivo rodar_agoranew.bat deve ser executado como Administrador.
+Para que o script consiga remover certificados da Raiz do Sistema e alterar chaves de registro protegidas, o arquivo setupNFCe.bat deve ser executado como Administrador.
 
+Este script habilita protocolos de segurança legados (como SSL 3.0 e TLS 1.0/1.1) para garantir a compatibilidade com sistemas de emissão e webservices da SEFAZ que ainda exigem esses padrões. Esteja ciente de que esses protocolos são considerados menos seguros que o TLS 1.2/1.3. Recomenda-se utilizar o script apenas em máquinas destinadas à emissão de notas fiscais.
 
 
 ## Isenção de Responsabilidade (Disclaimer)
@@ -53,5 +54,7 @@ Este script foi desenvolvido para fins de automação e facilitação técnica. 
 * O script remove certificados específicos da loja de raízes do sistema.
 * **Uso por sua conta e risco:** Não me responsabilizo por eventuais instabilidades ou comportamentos inesperados no sistema operacional. 
 * **Recomendação:** É altamente aconselhável criar um **Ponto de Restauração** do Windows antes de aplicar as configurações ou ter tirar um print das opções avançadas de internet e acessar o s.
+
+Observação: **"`Futuramente o Script criará um backup para o .reg para maior segurança`"**
 
 > **Aviso:** Este script foi desenvolvido para o contexto tributário e técnico do Brasil (ICP-Brasil / SEFAZ).
