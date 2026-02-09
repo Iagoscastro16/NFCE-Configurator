@@ -1,4 +1,4 @@
-📄 INSTRUÇÕES DE USO - CONFIGURADOR NFe (Versão GUI)
+INSTRUÇÕES DE USO - CONFIGURADOR NFCe (Versão GUI)
 
 ## Como Executar
 Para facilitar, criei um disparador automático. 
@@ -9,9 +9,9 @@ Para facilitar, criei um disparador automático.
 Este script foi desenvolvido para automatizar a configuração técnica de emissão de Notas Fiscais Eletrônicas, garantindo que o Windows esteja nos padrões exigidos pelos órgãos certificadores e SEFAZ, nele eu configuro as opções de internet avançadas, e removo as autoridades certificadores brasileiras de todas as versões usadas.
 
 
-✅ Testado em: Windows 10 e Windows 11. 
-⚠️ Compatibilidade Provável: Windows 8 e 8.1 (pendente de testes formais). 
-❌ Não compatível: Windows 7 e versões anteriores.
+ Testado em: Windows 10 e Windows 11. 
+ Compatibilidade Provável: Windows 8 e 8.1 (pendente de testes formais). 
+ Não compatível: Windows 7 e versões anteriores.
 
 🟦 1. rodar_agoranew.bat (O Disparador)
 Este arquivo funciona como a chave de ignição do sistema. Ele foi configurado com quatro pilares de segurança e performance:
@@ -31,7 +31,7 @@ O que ele faz tecnicamente:
 
 Interface Retrô: Cria uma janela nativa que evita que o usuário precise interagir com linhas de comando, reduzindo erros de operação.
 
-Ajuste de Registros (Internet Settings): * Configura o SecureProtocols para 2080 (SSL 3.0 + TLS 1.2), o padrão exigido pela NFe.
+Ajuste de Registros (Internet Settings): * Configura o SecureProtocols para 2080 (SSL 3.0 + TLS 1.2), o padrão exigido pela NFCe.
 
 Desativa o cache de páginas SSL e o SmartScreen para evitar bloqueios de download de XML.
 
@@ -46,7 +46,7 @@ Para que o script consiga remover certificados da Raiz do Sistema e alterar chav
 
 
 
-## ⚖️ Isenção de Responsabilidade (Disclaimer)
+## Isenção de Responsabilidade (Disclaimer)
 
 Este script foi desenvolvido para fins de automação e facilitação técnica. Ao utilizá-lo, você está ciente de que:
 * O script realiza alterações em chaves do **Registro do Windows (Regedit)**.
