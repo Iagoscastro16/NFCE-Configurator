@@ -21,6 +21,49 @@ function Write-Log {
     Add-Content -Path $logPath -Value $linha -Encoding UTF8
 }
 
+# --- Função de Backup do Registro ---
+function Backup-Registro {
+    $timestamp = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
+    $backupPath = Join-Path $PSScriptRoot "NFCe_backup_$timestamp.reg"
+
+    $chaves = @(
+        "HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings",
+        "HKCU\Software\Microsoft\Internet Explorer\Download",
+        "HKCU\Software\Microsoft\Windows\CurrentVersion\WinTrust\Trust Providers\Software Publishing"
+    )
+
+    try {
+        # Cabeçalho do arquivo .reg
+        "Windows Registry Editor Version 5.00" | Out-File -FilePath $backupPath -Encoding Unicode
+        "" | Out-File -FilePath $backupPath -Encoding Unicode -Append
+
+        foreach ($chave in $chaves) {
+            $chavePowerShell = $chave -replace "^HKCU\\", "HKCU:\\"
+            if (Test-Path $chavePowerShell) {
+                # Exporta via reg.exe para garantir formato .reg correto
+                $tempFile = [System.IO.Path]::GetTempFileName() + ".reg"
+                reg export $chave $tempFile /y 2>$null | Out-Null
+
+                if (Test-Path $tempFile) {
+                    # Pula o cabeçalho do arquivo temporário e anexa ao backup
+                    $conteudo = Get-Content $tempFile -Encoding Unicode | Select-Object -Skip 2
+                    $conteudo | Out-File -FilePath $backupPath -Encoding Unicode -Append
+                    Remove-Item $tempFile -ErrorAction SilentlyContinue
+                    Write-Log "Backup da chave realizado: $chave" "OK"
+                }
+            } else {
+                Write-Log "Chave não encontrada para backup (será criada): $chave" "AVISO"
+            }
+        }
+
+        Write-Log "Backup do registro salvo em: NFCe_backup_$timestamp.reg" "OK"
+        return $true
+    } catch {
+        Write-Log "Falha ao gerar backup do registro: $_" "ERRO"
+        return $false
+    }
+}
+
 # --- Função Principal ---
 function Executar-Configuracao {
     param($OutputLabel)
@@ -33,6 +76,23 @@ function Executar-Configuracao {
     Write-Log "========================================" "INFO"
     Write-Log "Iniciando configuração NFCe" "INFO"
     Write-Log "Usuário: $env:USERNAME | Máquina: $env:COMPUTERNAME" "INFO"
+
+    # 0. Backup antes de qualquer alteração
+    Write-Log "Gerando backup do registro antes das alterações..." "INFO"
+    $backupOk = Backup-Registro
+    if (-not $backupOk) {
+        $resposta = [System.Windows.Forms.MessageBox]::Show(
+            "Não foi possível gerar o backup do registro.`nDeseja continuar mesmo assim?",
+            "Aviso de Backup", "YesNo", "Warning"
+        )
+        if ($resposta -eq "No") {
+            Write-Log "Execução cancelada pelo usuário após falha no backup." "AVISO"
+            $OutputLabel.Text = "Status: Cancelado pelo usuário."
+            $OutputLabel.ForeColor = "DarkOrange"
+            return
+        }
+        Write-Log "Usuário optou por continuar sem backup." "AVISO"
+    }
 
     # 1. Caminhos dos registros
     $regPath      = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
@@ -109,7 +169,7 @@ function Executar-Configuracao {
         $OutputLabel.Text = "Status: Concluído com Sucesso!"
         $OutputLabel.ForeColor = "DarkGreen"
         [System.Windows.Forms.MessageBox]::Show(
-            "Configurações aplicadas com sucesso!`nLog salvo em: NFCe_log.txt",
+            "Configurações aplicadas com sucesso!`nBackup do registro e log salvos no diretório do script.",
             "Sucesso", "OK", "Information"
         )
     } else {
