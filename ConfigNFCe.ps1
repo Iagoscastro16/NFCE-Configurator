@@ -7,44 +7,120 @@
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
+# --- Função de Log ---
+function Write-Log {
+    param(
+        [string]$Mensagem,
+        [ValidateSet("OK","ERRO","INFO","AVISO")][string]$Tipo = "INFO"
+    )
+
+    $logPath = Join-Path $PSScriptRoot "NFCe_log.txt"
+    $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+    $linha = "[$timestamp] [$Tipo] $Mensagem"
+
+    Add-Content -Path $logPath -Value $linha -Encoding UTF8
+}
+
 # --- Função Principal ---
 function Executar-Configuracao {
     param($OutputLabel)
-    
+
     $OutputLabel.Text = "Status: Processando..."
     $OutputLabel.ForeColor = "Blue"
-    
+
+    $erros = 0
+
+    Write-Log "========================================" "INFO"
+    Write-Log "Iniciando configuração NFCe" "INFO"
+    Write-Log "Usuário: $env:USERNAME | Máquina: $env:COMPUTERNAME" "INFO"
+
     # 1. Caminhos dos registros
-    $regPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
-    $iePath = "HKCU:\Software\Microsoft\Internet Explorer\Download"
+    $regPath      = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+    $iePath       = "HKCU:\Software\Microsoft\Internet Explorer\Download"
     $winTrustPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\WinTrust\Trust Providers\Software Publishing"
 
-    # Garantir chaves
+    # Garantir que as chaves existem
     foreach ($p in @($regPath, $iePath, $winTrustPath)) {
-        if (!(Test-Path $p)) { New-Item -Path $p -Force | Out-Null }
-    }
-
-    # 2. Aplicando Registros
-    Set-ItemProperty -Path $regPath -Name "SecureProtocols" -Value 2080
-    Set-ItemProperty -Path $regPath -Name "DisableCachingOfSSLPages" -Value 1
-    Set-ItemProperty -Path $regPath -Name "ManageSecurityCloud" -Value 0
-    Set-ItemProperty -Path $regPath -Name "CertificateRevocation" -Value 0
-    Set-ItemProperty -Path $iePath -Name "RunInvalidSignatures" -Value 1
-    Set-ItemProperty -Path $iePath -Name "CheckExeSignatures" -Value "no"
-    Set-ItemProperty -Path $winTrustPath -Name "State" -Value 146944
-
-    # 3. Limpeza de Certificados
-    $lojas = @("Cert:\LocalMachine\Root", "Cert:\CurrentUser\Root")
-    foreach ($loja in $lojas) {
-        $certs = Get-ChildItem $loja | Where-Object { $_.Subject -match "Autoridade Certificadora Raiz Brasileira v(1|2|5|10)" }
-        if ($certs) {
-            $certs | Remove-Item -ErrorAction SilentlyContinue
+        try {
+            if (!(Test-Path $p)) {
+                New-Item -Path $p -Force | Out-Null
+                Write-Log "Chave de registro criada: $p" "OK"
+            } else {
+                Write-Log "Chave de registro já existe: $p" "INFO"
+            }
+        } catch {
+            Write-Log "Falha ao verificar/criar chave: $p — $_" "ERRO"
+            $erros++
         }
     }
 
-    $OutputLabel.Text = "Status: Concluído com Sucesso!"
-    $OutputLabel.ForeColor = "DarkGreen"
-    [System.Windows.Forms.MessageBox]::Show("As configurações de Internet e Certificados NFCe foram aplicadas!", "Sucesso")
+    # 2. Aplicando Registros — cada um com try/catch individual
+    $registros = @(
+        @{ Path=$regPath;      Name="SecureProtocols";        Value=2080  },
+        @{ Path=$regPath;      Name="DisableCachingOfSSLPages"; Value=1   },
+        @{ Path=$regPath;      Name="ManageSecurityCloud";     Value=0    },
+        @{ Path=$regPath;      Name="CertificateRevocation";   Value=0    },
+        @{ Path=$iePath;       Name="RunInvalidSignatures";    Value=1    },
+        @{ Path=$iePath;       Name="CheckExeSignatures";      Value="no" },
+        @{ Path=$winTrustPath; Name="State";                   Value=146944 }
+    )
+
+    foreach ($reg in $registros) {
+        try {
+            Set-ItemProperty -Path $reg.Path -Name $reg.Name -Value $reg.Value -ErrorAction Stop
+            Write-Log "Registro aplicado: $($reg.Name) = $($reg.Value)" "OK"
+        } catch {
+            Write-Log "Falha ao aplicar registro: $($reg.Name) — $_" "ERRO"
+            $erros++
+        }
+    }
+
+    # 3. Limpeza de Certificados
+    Write-Log "Iniciando limpeza de certificados raiz brasileiros..." "INFO"
+
+    $lojas = @("Cert:\LocalMachine\Root", "Cert:\CurrentUser\Root")
+    foreach ($loja in $lojas) {
+        try {
+            $certs = Get-ChildItem $loja -ErrorAction Stop |
+                     Where-Object { $_.Subject -match "Autoridade Certificadora Raiz Brasileira v(1|2|5|10)" }
+
+            if ($certs) {
+                foreach ($cert in $certs) {
+                    try {
+                        $cert | Remove-Item -ErrorAction Stop
+                        Write-Log "Certificado removido [$loja]: $($cert.Subject)" "OK"
+                    } catch {
+                        Write-Log "Falha ao remover certificado [$loja]: $($cert.Subject) — $_" "ERRO"
+                        $erros++
+                    }
+                }
+            } else {
+                Write-Log "Nenhum certificado alvo encontrado em: $loja" "AVISO"
+            }
+        } catch {
+            Write-Log "Falha ao acessar loja de certificados: $loja — $_" "ERRO"
+            $erros++
+        }
+    }
+
+    # 4. Resultado final
+    if ($erros -eq 0) {
+        Write-Log "Configuração concluída sem erros." "OK"
+        $OutputLabel.Text = "Status: Concluído com Sucesso!"
+        $OutputLabel.ForeColor = "DarkGreen"
+        [System.Windows.Forms.MessageBox]::Show(
+            "Configurações aplicadas com sucesso!`nLog salvo em: NFCe_log.txt",
+            "Sucesso", "OK", "Information"
+        )
+    } else {
+        Write-Log "Configuração concluída com $erros erro(s). Verifique o log." "AVISO"
+        $OutputLabel.Text = "Status: Concluído com $erros erro(s). Veja o log."
+        $OutputLabel.ForeColor = "DarkRed"
+        [System.Windows.Forms.MessageBox]::Show(
+            "Configuração finalizada, mas $erros item(ns) falharam.`nConsulte o arquivo NFCe_log.txt para detalhes.",
+            "Atenção", "OK", "Warning"
+        )
+    }
 }
 
 # --- Criação da Interface Gráfica ---
